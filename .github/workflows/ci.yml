@@ -1,0 +1,18 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: vx.x.x
+      - run: deno lint
+      - run: deno test --unstable --no-run -A $(find -name "*.ts")
