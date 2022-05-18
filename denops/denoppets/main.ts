@@ -1,7 +1,9 @@
 import { Denops } from "./deps.ts";
 import { Denoppets } from "./denoppets.ts";
+import { Snippet } from "./snippet.ts";
 import { autocmd, execute } from "./deps.ts";
 import { ensureString } from "./deps.ts";
+import { col, getline } from "./deps.ts";
 
 export async function main(denops: Denops) {
   const unknown_rtp = await denops.eval("&rtp");
@@ -21,6 +23,16 @@ export async function main(denops: Denops) {
       const snippets = denoppets.currentSnippets(filetype.split("."));
       return snippets;
     },
+
+    async canExpandSnippet(): Promise<boolean> {
+      return !!(await _getSnippet(denops, denoppets));
+    },
+
+    async expand(): Promise<void> {
+      const snippet = await _getSnippet(denops, denoppets) as Snippet;
+      console.log(snippet);
+      return Promise.resolve();
+    },
   };
 
   await autocmd.group(denops, "register-source", (helper) => {
@@ -34,8 +46,25 @@ export async function main(denops: Denops) {
   await execute(
     denops,
     `
-    inoremap <expr><silent> g:denoppets#key_map.expand call denops#notify('${denops.name}', 'expand')
-    snoremap <expr><silent> g:denoppets#key_map.expand call denops#notify('${denops.name}', 'expand')
+    exec "inoremap <expr><silent> " . g:denoppets#key_map.expand . " denops#notify('${denops.name}', 'expand', [])"
+    exec "snoremap <expr><silent> " . g:denoppets#key_map.expand . " denops#notify('${denops.name}', 'expand', [])"
     `,
   );
 }
+
+const _getSnippet = async (
+  denops: Denops,
+  denoppets: Denoppets,
+): Promise<Snippet | undefined> => {
+  const filetype = await denops.eval("&filetype") as string;
+  const before = await _getBefore(denops);
+  if (typeof before === "string") {
+    return denoppets.findSnippet(filetype.split("."), before);
+  }
+};
+
+const _getBefore = async (denops: Denops): Promise<string | undefined> => {
+  const line = await getline(denops, ".");
+  const before = line.slice(0, await col(denops, ".")).trim().split(" ").pop();
+  return before;
+};

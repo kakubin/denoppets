@@ -1,4 +1,5 @@
 import { Snipmate } from "./sources/snipmate.ts";
+import { Snippet } from "./snippet.ts";
 
 export class Denoppets {
   private snippetsSources: Snipmate[];
@@ -19,5 +20,9 @@ export class Denoppets {
     return this.snippetsSources.flatMap((source) => {
       return source.getSnippetsFor(filetypes);
     });
+  }
+
+  findSnippet(filetypes: string[], input: string): Snippet | undefined {
+    return this.snippetsSources[0].getSnippetFor(filetypes, input);
   }
 }

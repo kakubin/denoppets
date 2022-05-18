@@ -4,6 +4,7 @@ export type { Denops } from "https://deno.land/x/denops_std@v3.2.0/mod.ts";
 export { execute } from "https://deno.land/x/denops_std@v3.2.0/helper/mod.ts";
 export * as autocmd from "https://deno.land/x/denops_std@v3.2.0/autocmd/mod.ts";
 export {
+  col,
   cursor,
   getline,
 } from "https://deno.land/x/denops_std@v3.2.0/function/mod.ts";
