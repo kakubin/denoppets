@@ -3,12 +3,13 @@ import { Denoppets } from "./denoppets.ts";
 import { Snippet } from "./snippet.ts";
 import { autocmd, execute } from "./deps.ts";
 import { ensureString } from "./deps.ts";
-import { col, getline } from "./deps.ts";
+import { Window } from "./window.ts";
 
 export async function main(denops: Denops) {
   const unknown_rtp = await denops.eval("&rtp");
   const rtp = ensureString(unknown_rtp);
   const denoppets = new Denoppets(rtp.split(","));
+  const currentWindow = new Window(denops);
 
   denops.dispatcher = {
     registerSource(arg1: unknown): Promise<void> {
@@ -25,11 +26,11 @@ export async function main(denops: Denops) {
     },
 
     async canExpandSnippet(): Promise<boolean> {
-      return !!(await _getSnippet(denops, denoppets));
+      return !!(await _getSnippet(denoppets, currentWindow));
     },
 
     async expand(): Promise<void> {
-      const snippet = await _getSnippet(denops, denoppets) as Snippet;
+      const snippet = await _getSnippet(denoppets, currentWindow) as Snippet;
       console.log(snippet);
       return Promise.resolve();
     },
@@ -53,18 +54,12 @@ export async function main(denops: Denops) {
 }
 
 const _getSnippet = async (
-  denops: Denops,
   denoppets: Denoppets,
+  currentWindow: Window,
 ): Promise<Snippet | undefined> => {
-  const filetype = await denops.eval("&filetype") as string;
-  const before = await _getBefore(denops);
+  const filetype = await currentWindow.denops.eval("&filetype") as string;
+  const before = await currentWindow.before();
   if (typeof before === "string") {
     return denoppets.findSnippet(filetype.split("."), before);
   }
-};
-
-const _getBefore = async (denops: Denops): Promise<string | undefined> => {
-  const line = await getline(denops, ".");
-  const before = line.slice(0, await col(denops, ".")).trim().split(" ").pop();
-  return before;
 };
