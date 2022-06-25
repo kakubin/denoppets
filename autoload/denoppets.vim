@@ -26,30 +26,30 @@ endfunction
 
 function! denoppets#expand_snippet() abort
   if s:denoppets#can_expand_snippet()
-    g:denops#notify('denoppets', 'expandSnippet', [])
+    call g:denops#notify('denoppets', 'expandSnippet', [])
   endif
 endfunction
 
 function! denoppets#jump_forwards() abort
   if s:denoppets#can_jump_forwards()
-    g:denops#notify('denoppets', 'jumpForwards', [])
+    call g:denops#notify('denoppets', 'jumpForwards', [])
   endif
 endfunction
 
 function! denoppets#jump_backwards() abort
   if s:denoppets#can_jump_backwards()
-    g:denops#notify('denoppets', 'jumpBackwards', [])
+    call g:denops#notify('denoppets', 'jumpBackwards', [])
   endif
 endfunction
 
 function! denoppets#can_expand_snippet() abort
-  g:denops#request('denoppets', 'canExpandSnippet', [])
+  call g:denops#request('denoppets', 'canExpandSnippet', [])
 endfunction
 
 function! denoppets#can_jump_forwards() abort
-  g:denops#request('denoppets', 'canJumpForwards', [])
+  call g:denops#request('denoppets', 'canJumpForwards', [])
 endfunction
 
 function! denoppets#can_jump_backwards() abort
-  g:denops#request('denoppets', 'canJumpBackwards', [])
+  call g:denops#request('denoppets', 'canJumpBackwards', [])
 endfunction
